@@ -1,6 +1,6 @@
 package sudokiscte;
 
-public class SudokuAux {
+class SudokuAux {
 	static final int BOARD_SIZE = 9;
 	static final int SQUARE_SIZE = 3;
 	
@@ -24,7 +24,27 @@ public class SudokuAux {
 
 			}
 		
+		blankBoardProportionally(board, 0.4);
+		
 		return true;
+	}
+	
+	static void blankBoardProportionally(int[][] board, double blankPercentage) {
+		// Calculates the number (floored) of positions on the board to be marked as 0
+		int toMakeBlank = (int)(blankPercentage * BOARD_SIZE * BOARD_SIZE);
+
+		while(toMakeBlank > 0) {
+			// Randomize a position on the board
+			int i = (int)(Math.random() * BOARD_SIZE);
+			int j = (int)(Math.random() * BOARD_SIZE);
+			
+			// If the position on the board is not blank
+			if(board[i][j] != 0) {
+				// Make it blank, and one less to position to make so
+				board[i][j] = 0;
+				toMakeBlank--;
+			}
+		}
 	}
 	
 	// Check for board lines out of specified size for a sudoku board
