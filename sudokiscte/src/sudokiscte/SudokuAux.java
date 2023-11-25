@@ -12,7 +12,10 @@ class SudokuAux {
 		for(int i = 0; i < board.length; i++)
 			for(int j = 0; j < board[i].length; j++) {
 				int value = board[i][j];
-				
+
+				// Check if value is in the correct range
+				if(!validElement(value)) return false;
+
 				// Search in the same line and same column for matching values; if that happens, the board is not valid
 				for(int k = 0; k < board.length; k++)
 					if((board[k][j] == value && k != i) || (board[i][k] == value && k != j)) return false;
@@ -23,11 +26,13 @@ class SudokuAux {
 						if(board[k][l] == value && k != i && l != j) return false;
 
 			}
-		
+
 		blankBoardProportionally(board, 0.4);
-		
+
 		return true;
 	}
+	
+	static boolean validElement(int value) { return value >= 0 && value <= 9; }
 	
 	static void blankBoardProportionally(int[][] board, double blankPercentage) {
 		// Calculates the number (floored) of positions on the board to be marked as 0
