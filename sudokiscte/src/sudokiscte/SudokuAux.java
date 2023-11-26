@@ -68,7 +68,7 @@ class SudokuAux {
 	}
 
 	// Creates a string from a board game
-	static String stringfy(int[][] board) {
+	static String stringify(int[][] board) {
 		String result = "";
 
 		for (int i = 0; i < board.length; i++) {
@@ -84,6 +84,14 @@ class SudokuAux {
 		return result;
 	}
 
+	static void writeToCell(ColorImage img, int cellLine, int cellColumn, String content) {
+		img.drawText(cellLine * 50, cellColumn * 50, content, 50, Color.BLUE);
+	}
+
+	static void blankCell(ColorImage img, int cellLine, int cellColumn) {
+
+	}
+
 	static void test() {
 		int[][] board = { { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, { 4, 5, 6, 7, 8, 9, 1, 2, 3 }, { 7, 8, 9, 1, 2, 3, 4, 5, 6 },
 		    { 2, 1, 4, 3, 6, 5, 8, 9, 7 }, { 3, 6, 5, 8, 9, 7, 2, 1, 4 }, { 8, 9, 7, 2, 1, 4, 3, 6, 5 },
@@ -91,6 +99,16 @@ class SudokuAux {
 
 		blankBoardProportionally(board, 0.4);
 
-		System.out.println(stringfy(board));
+		ColorImage img = new ColorImage(400, 400);
+		img.whiteBoard();
+		img.drawMargin();
+
+		img.drawGrid(9, 9);
+
+		for (int i = 0; i < board.length; i++)
+			for (int j = 0; j < board[i].length; j++)
+				writeToCell(img, i, j, "" + board[i][j]);
+
+		System.out.println(stringify(board));
 	}
 }
