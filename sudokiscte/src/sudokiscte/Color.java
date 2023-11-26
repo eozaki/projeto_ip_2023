@@ -66,5 +66,5 @@ class Color {
 	static final Color SOLARIZED_BACKGROUND = new Color(0, 43, 54);
 	static final Color SOLARIZED_LINES = new Color(30, 100, 110);
 	static final Color SOLARIZED_FONT = new Color(238, 232, 213);
-	static final Color SOLARIZED_ERROR = new Color(196, 90, 90);
+	static final Color SOLARIZED_ERROR = new Color(211, 1, 2);
 }

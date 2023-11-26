@@ -28,12 +28,18 @@ class SudokuAux {
 						return false;
 
 				// Search in the quadrant of the cell we have in hand for repeated values
-				for (int k = (i / SECTOR_SIZE) * SECTOR_SIZE; k < (i / SECTOR_SIZE) * SECTOR_SIZE + SECTOR_SIZE; k++)
-					for (int l = (j / SECTOR_SIZE) * SECTOR_SIZE; l < (j / SECTOR_SIZE) * SECTOR_SIZE + SECTOR_SIZE; l++)
-						if (board[k][l] == value && k != i && l != j)
-							return false;
-
+				if (!validSectorPlay(i, j, value, board))
+					return false;
 			}
+
+		return true;
+	}
+
+	static boolean validSectorPlay(int i, int j, int value, int[][] board) {
+		for (int k = (i / SECTOR_SIZE) * SECTOR_SIZE; k < (i / SECTOR_SIZE) * SECTOR_SIZE + SECTOR_SIZE; k++)
+			for (int l = (j / SECTOR_SIZE) * SECTOR_SIZE; l < (j / SECTOR_SIZE) * SECTOR_SIZE + SECTOR_SIZE; l++)
+				if (board[k][l] == value && k != i && l != j)
+					return false;
 
 		return true;
 	}
@@ -92,23 +98,23 @@ class SudokuAux {
 		    (cellLine * CELL_RESOLUTION) - CELL_RESOLUTION / 12, content, CELL_RESOLUTION, Color.SOLARIZED_FONT);
 	}
 
-	static void writeToCellWithBackground(ColorImage img, int cellLine, int cellColumn, String content, Color bg) {
-		img.paintCell(cellLine, cellColumn, CELL_RESOLUTION, bg);
+	static void writeToCellWithFontColor(ColorImage img, int cellLine, int cellColumn, String content, Color c) {
+		img.paintCell(cellLine, cellColumn, CELL_RESOLUTION, Color.SOLARIZED_BACKGROUND);
 		img.drawText((cellColumn * CELL_RESOLUTION) + CELL_RESOLUTION / 4,
-		    (cellLine * CELL_RESOLUTION) - CELL_RESOLUTION / 12, content, CELL_RESOLUTION, Color.SOLARIZED_FONT);
+		    (cellLine * CELL_RESOLUTION) - CELL_RESOLUTION / 12, content, CELL_RESOLUTION, c);
 	}
 
 	static void invalidLine(ColorImage img, int line, int[][] board) {
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			img.paintCell(line, i, CELL_RESOLUTION, Color.SOLARIZED_ERROR);
-			writeToCellWithBackground(img, line, i, board[line][i] + "", Color.SOLARIZED_ERROR);
+			writeToCellWithFontColor(img, line, i, board[line][i] + "", Color.SOLARIZED_ERROR);
 		}
 	}
 
 	static void invalidColumn(ColorImage img, int column, int[][] board) {
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			img.paintCell(i, column, CELL_RESOLUTION, Color.SOLARIZED_ERROR);
-			writeToCellWithBackground(img, i, column, board[i][column] + "", Color.SOLARIZED_ERROR);
+			writeToCellWithFontColor(img, i, column, board[i][column] + "", Color.SOLARIZED_ERROR);
 		}
 	}
 
@@ -118,7 +124,7 @@ class SudokuAux {
 			for (int l = (horizontalIndex / SECTOR_SIZE) * SECTOR_SIZE; l < (horizontalIndex / SECTOR_SIZE) * SECTOR_SIZE
 			    + SECTOR_SIZE; l++) {
 				img.paintCell(k, l, CELL_RESOLUTION, Color.SOLARIZED_ERROR);
-				writeToCellWithBackground(img, k, l, board[k][l] + "", Color.SOLARIZED_ERROR);
+				writeToCellWithFontColor(img, k, l, board[k][l] + "", Color.SOLARIZED_ERROR);
 			}
 	}
 
@@ -137,9 +143,9 @@ class SudokuAux {
 		for (int i = 0; i < board.length; i++)
 			for (int j = 0; j < board[i].length; j++)
 				writeToCell(img, i, j, "" + (board[i][j] == 0 ? "" : board[i][j]));
-//
-//		invalidLine(img, 1, board);
-		invalidColumn(img, 2, board);
+
+		invalidLine(img, 1, board);
+//		invalidColumn(img, 2, board);
 //		invalidSector(img, 7, 7, board);
 
 		System.out.println(stringify(board));
