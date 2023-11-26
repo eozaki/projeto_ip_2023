@@ -65,9 +65,10 @@ class ColorImage {
 	}
 
 	void paintCell(int line, int column, int size, Color color) {
-		for (int i = (line * 60) + 1; i < (line * 60) + size; i++)
-			for (int j = (column * 60) + 1; j < (column * 60) + size; j++)
-				setColor(j, i, color);
+		for (int i = (line * 60); i < (line * 60) + size; i++)
+			for (int j = (column * 60); j < (column * 60) + size; j++)
+				if (!getColor(j, i).sameAs(Color.SOLARIZED_LINES))
+					setColor(j, i, color);
 	}
 
 	void drawMargin() {
