@@ -60,18 +60,22 @@ class ColorImage {
 				setColor(i, j, Color.WHITE);
 	}
 
-	void whiteSquare(int line, int column, int size) {
+	void wipeCell(int line, int column, int size) {
+		paintCell(line, column, size, Color.SOLARIZED_BACKGROUND);
+	}
+
+	void paintCell(int line, int column, int size, Color color) {
 		for (int i = (line * 60) + 1; i < (line * 60) + size; i++)
 			for (int j = (column * 60) + 1; j < (column * 60) + size; j++)
-				setColor(j, i, Color.WHITE);
+				setColor(j, i, color);
 	}
 
 	void drawMargin() {
-		drawHorizontalLine(0, Color.BLACK);
-		drawHorizontalLine(data.length - 1, Color.BLACK);
+		drawHorizontalLine(0, Color.SOLARIZED_LINES);
+		drawHorizontalLine(data.length - 1, Color.SOLARIZED_LINES);
 
-		drawVerticalLine(0, Color.BLACK);
-		drawVerticalLine(data[data.length - 1].length - 1, Color.BLACK);
+		drawVerticalLine(0, Color.SOLARIZED_LINES);
+		drawVerticalLine(data[0].length - 1, Color.SOLARIZED_LINES);
 	}
 
 	void drawHorizontalLine(int line, Color color) {
@@ -86,17 +90,25 @@ class ColorImage {
 		}
 	}
 
-	void drawGrid(int lines, int columns) {
+	void drawGrid(int lines, int columns, int regionSize) {
 		int columnPixels = data.length / columns;
 		int linePixels = data.length / lines;
 
 		while (columns > 0) {
-			drawVerticalLine((columns - 1) * columnPixels, Color.BLACK);
+			drawVerticalLine((columns - 1) * columnPixels, Color.SOLARIZED_LINES);
+
+			if (columns % regionSize == 1)
+				drawVerticalLine(Math.max((columns - 1) * columnPixels - 1, 0), Color.SOLARIZED_LINES);
+
 			columns--;
 		}
 
 		while (lines > 0) {
-			drawHorizontalLine((lines - 1) * linePixels, Color.BLACK);
+			drawHorizontalLine((lines - 1) * linePixels, Color.SOLARIZED_LINES);
+
+			if (lines % regionSize == 1)
+				drawHorizontalLine(Math.max((lines - 1) * linePixels - 1, 0), Color.SOLARIZED_LINES);
+
 			lines--;
 		}
 	}

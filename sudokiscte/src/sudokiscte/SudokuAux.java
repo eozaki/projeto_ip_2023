@@ -3,6 +3,8 @@ package sudokiscte;
 class SudokuAux {
 	static final int BOARD_SIZE = 9;
 	static final int SQUARE_SIZE = 3;
+	static final int BOARD_RESOLUTION = 540;
+	static final int CELL_RESOLUTION = BOARD_RESOLUTION / BOARD_SIZE;
 
 	static boolean validGame(int[][] board) {
 		// Check the length of board lines and columns; if any doesn't match the
@@ -85,11 +87,9 @@ class SudokuAux {
 	}
 
 	static void writeToCell(ColorImage img, int cellLine, int cellColumn, String content) {
-		img.drawText((cellColumn * 60) + 15, (cellLine * 60) - 5, content, 60, Color.BLUE);
-	}
-
-	static void blankCell(ColorImage img, int cellLine, int cellColumn) {
-
+		img.wipeCell(cellLine, cellColumn, CELL_RESOLUTION);
+		img.drawText((cellColumn * CELL_RESOLUTION) + CELL_RESOLUTION / 4,
+		    (cellLine * CELL_RESOLUTION) - CELL_RESOLUTION / 12, content, CELL_RESOLUTION, Color.SOLARIZED_FONT);
 	}
 
 	static void test() {
@@ -97,18 +97,18 @@ class SudokuAux {
 		    { 2, 1, 4, 3, 6, 5, 8, 9, 7 }, { 3, 6, 5, 8, 9, 7, 2, 1, 4 }, { 8, 9, 7, 2, 1, 4, 3, 6, 5 },
 		    { 5, 3, 1, 6, 4, 2, 9, 7, 8 }, { 6, 4, 2, 9, 7, 8, 5, 3, 1 }, { 9, 7, 8, 5, 3, 1, 6, 4, 2 } };
 
-		blankBoardProportionally(board, 0.4);
+		blankBoardProportionally(board, 0.0);
 
-		ColorImage img = new ColorImage(540, 540, Color.WHITE);
-		img.drawMargin();
-		img.drawGrid(9, 9);
+		ColorImage img = new ColorImage(BOARD_RESOLUTION, BOARD_RESOLUTION, Color.SOLARIZED_BACKGROUND);
 
 		for (int i = 0; i < board.length; i++)
 			for (int j = 0; j < board[i].length; j++)
 				writeToCell(img, i, j, "" + (board[i][j] == 0 ? "" : board[i][j]));
 
-		img.whiteSquare(3, 2, 60);
-		writeToCell(img, 3, 2, "E");
+		img.wipeCell(8, 8, BOARD_RESOLUTION / BOARD_SIZE);
+		img.drawMargin();
+		img.drawGrid(9, 9, SQUARE_SIZE);
+
 		System.out.println(stringify(board));
 	}
 }

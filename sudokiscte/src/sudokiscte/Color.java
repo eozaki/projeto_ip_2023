@@ -58,4 +58,8 @@ class Color {
 	static final Color BLUE = new Color(MIN, MIN, MAX);
 	static final Color BLACK = new Color(MIN, MIN, MIN);
 	static final Color WHITE = new Color(MAX, MAX, MAX);
+
+	static final Color SOLARIZED_BACKGROUND = new Color(0, 43, 54);
+	static final Color SOLARIZED_LINES = new Color(30, 100, 110);
+	static final Color SOLARIZED_FONT = new Color(238, 232, 213);
 }
