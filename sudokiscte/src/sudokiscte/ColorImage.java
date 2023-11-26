@@ -60,6 +60,12 @@ class ColorImage {
 				setColor(i, j, Color.WHITE);
 	}
 
+	void whiteSquare(int line, int column, int size) {
+		for (int i = (line * 60) + 1; i < (line * 60) + size; i++)
+			for (int j = (column * 60) + 1; j < (column * 60) + size; j++)
+				setColor(j, i, Color.WHITE);
+	}
+
 	void drawMargin() {
 		drawHorizontalLine(0, Color.BLACK);
 		drawHorizontalLine(data.length - 1, Color.BLACK);

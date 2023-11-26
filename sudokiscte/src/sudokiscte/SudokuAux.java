@@ -85,7 +85,7 @@ class SudokuAux {
 	}
 
 	static void writeToCell(ColorImage img, int cellLine, int cellColumn, String content) {
-		img.drawText(cellLine * 50, cellColumn * 50, content, 50, Color.BLUE);
+		img.drawText((cellColumn * 60) + 15, (cellLine * 60) - 5, content, 60, Color.BLUE);
 	}
 
 	static void blankCell(ColorImage img, int cellLine, int cellColumn) {
@@ -99,16 +99,16 @@ class SudokuAux {
 
 		blankBoardProportionally(board, 0.4);
 
-		ColorImage img = new ColorImage(400, 400);
-		img.whiteBoard();
+		ColorImage img = new ColorImage(540, 540, Color.WHITE);
 		img.drawMargin();
-
 		img.drawGrid(9, 9);
 
 		for (int i = 0; i < board.length; i++)
 			for (int j = 0; j < board[i].length; j++)
-				writeToCell(img, i, j, "" + board[i][j]);
+				writeToCell(img, i, j, "" + (board[i][j] == 0 ? "" : board[i][j]));
 
+		img.whiteSquare(3, 2, 60);
+		writeToCell(img, 3, 2, "E");
 		System.out.println(stringify(board));
 	}
 }
