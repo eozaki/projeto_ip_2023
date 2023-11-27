@@ -39,10 +39,19 @@ class SudokuBoard {
 			if (getValue(i, j) != 0)
 				break;
 		}
-		// Return if no free position was found in a thound tries
-		// TODO look for open positions sistematically, then
-		if (count == 1000)
-			return;
+
+		i = 0;
+		j = 0;
+		if (count >= 1000) {
+			while (i < BOARD_SIZE) {
+				while (j < BOARD_SIZE) {
+					if (board[i][j] == 0)
+						break;
+					j++;
+				}
+				i++;
+			}
+		}
 
 		count = 0;
 		while (count < 1000) {
@@ -50,6 +59,14 @@ class SudokuBoard {
 			boolean result = SudokuAux.validSectorPlay(i, j, value, board);
 			if (result)
 				break;
+		}
+
+		if (count >= 1000) {
+			for (value = 0; value <= BOARD_SIZE; value++) {
+				boolean result = SudokuAux.validSectorPlay(i, j, value, board);
+				if (result)
+					break;
+			}
 		}
 
 		play(i, j, value);
