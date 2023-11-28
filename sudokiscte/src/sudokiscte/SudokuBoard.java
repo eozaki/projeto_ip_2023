@@ -4,12 +4,46 @@ class SudokuBoard {
 	static final int BOARD_SIZE = SudokuAux.BOARD_SIZE;
 	static final int SECTOR_SIZE = SudokuAux.SECTOR_SIZE;
 
+	static final int PLAYED_LINE_INDEX = 0;
+	static final int PLAYED_COLUMN_INDEX = 1;
+
 	private int[][] board;
 	private final int[][] initialBoard;
 
-	public SudokuBoard() {
+	// Array of integers with as many lines as blank positions in the board, and 2
+	// positions for each of those (line and column, respectively)
+	private int[][] plays;
+
+	// To be used as index of the last move played (offset by one from the position
+	// the play has been stored in)
+	// Eg. No move played, index is 0, and undo returns without doing a thing
+	// Eg. Index 1, one move played, gets coordinates from row 0 in **plays** array
+	// sets it back to 0 in board and deduces 1 from the index, making it 0 again
+	private int playedPositions = 0;
+
+	public SudokuBoard(int[][] initialBoard) {
+		this.initialBoard = initialBoard;
+
+		copyInitialBoard();
+		int[][] plays = new int[countBlankPositions()][2];
+	}
+
+	private int countBlankPositions() {
+		int count = 0;
+		for (int i = 0; i < BOARD_SIZE; i++)
+			for (int j = 0; j < BOARD_SIZE; j++)
+				if (board[i][j] == 0)
+					count++;
+
+		return count;
+	}
+
+	private void copyInitialBoard() {
 		this.board = new int[BOARD_SIZE][BOARD_SIZE];
-		this.initialBoard = new int[BOARD_SIZE][BOARD_SIZE];
+
+		for (int i = 0; i < BOARD_SIZE; i++)
+			for (int j = 0; j < BOARD_SIZE; j++)
+				this.board[i][j] = initialBoard[i][j];
 	}
 
 	int getValue(int i, int j) {
@@ -24,9 +58,34 @@ class SudokuBoard {
 		if (initialBoard[i][j] != 0)
 			return false;
 
-		initialBoard[i][j] = value;
+		board[i][j] = value;
+		storePlay(i, j);
+
+		validatePosition(i, j);
 
 		return true;
+	}
+
+	void storePlay(int line, int column) {
+		plays[playedPositions][0] = line;
+		plays[playedPositions][1] = column;
+
+		playedPositions++;
+	}
+
+	void undo() {
+		if (playedPositions == 0)
+			return;
+
+		if (playedPositions >= plays.length)
+			playedPositions = plays.length - 1;
+
+		int[] lastPlay = plays[playedPositions - 1];
+		int line = lastPlay[PLAYED_LINE_INDEX];
+		int column = lastPlay[PLAYED_COLUMN_INDEX];
+		board[line][column] = 0;
+
+		playedPositions--;
 	}
 
 	void randomPlay() {
@@ -76,5 +135,102 @@ class SudokuBoard {
 		for (int i = 0; i < board.length; i++)
 			for (int j = 0; j < board[i].length; j++)
 				board[i][j] = initialBoard[i][j];
+	}
+
+	boolean validateSector(int sectorV, int sectorH) {
+		for (int i = (sectorV / SECTOR_SIZE) * SECTOR_SIZE; i < (sectorV / SECTOR_SIZE) * SECTOR_SIZE + SECTOR_SIZE; i++) {
+			for (int j = (sectorH / SECTOR_SIZE) * SECTOR_SIZE; j < (sectorH / SECTOR_SIZE) * SECTOR_SIZE
+			    + SECTOR_SIZE; j++) {
+				if (!uniqueValueInSector(board[i][j], i, j))
+					return false;
+			}
+		}
+
+		return true;
+	}
+
+	boolean uniqueValueInSector(int value, int sectorV, int sectorH) {
+		if (value == 0)
+			return true;
+
+		for (int i = (sectorV / SECTOR_SIZE) * SECTOR_SIZE; i < (sectorV / SECTOR_SIZE) * SECTOR_SIZE + SECTOR_SIZE; i++) {
+			for (int j = (sectorH / SECTOR_SIZE) * SECTOR_SIZE + 1; j < (sectorH / SECTOR_SIZE) * SECTOR_SIZE
+			    + SECTOR_SIZE; j++) {
+				if (board[i][j] == value && (i != sectorV || j != sectorH))
+					return false;
+			}
+		}
+		return true;
+	}
+
+	boolean validateColumn(int column) {
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = i + 1; j < BOARD_SIZE; j++) {
+				if (board[i][column] == board[j][column])
+					return false;
+			}
+		}
+
+		return true;
+	}
+
+	boolean validateLine(int line) {
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = i + 1; j < BOARD_SIZE; j++) {
+				if (board[line][i] == board[line][j])
+					return false;
+			}
+		}
+
+		return true;
+	}
+
+	boolean validatePosition(int line, int column) {
+		return (validateLine(line) && validateColumn(column) && validateSector(line, column));
+	}
+
+	boolean isGameFinished() {
+		for (int i = 0; i < BOARD_SIZE; i++)
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				if (board[i][j] == 0)
+					return false;
+
+				if (!validateLine(i) || !validateColumn(i) || !validateSector(i, j))
+					return false;
+			}
+
+		return true;
+	}
+
+	static void test() {
+		int[][] board = { { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, { 4, 5, 3, 7, 8, 9, 1, 2, 3 }, { 7, 8, 9, 1, 2, 3, 4, 5, 6 },
+		    { 2, 1, 4, 3, 6, 5, 8, 9, 7 }, { 3, 6, 5, 8, 9, 7, 2, 1, 4 }, { 8, 9, 7, 2, 1, 4, 3, 6, 5 },
+		    { 5, 3, 1, 6, 4, 2, 9, 7, 8 }, { 6, 4, 2, 9, 7, 8, 5, 3, 1 }, { 9, 7, 8, 5, 3, 1, 6, 4, 2 } };
+		SudokuAux.blankBoardProportionally(board, 0);
+
+		ColorImage img = new ColorImage(SudokuAux.BOARD_RESOLUTION, SudokuAux.BOARD_RESOLUTION, Color.SOLARIZED_BACKGROUND);
+
+		img.drawMargin();
+		img.drawGrid(BOARD_SIZE, BOARD_SIZE, SECTOR_SIZE);
+
+		SudokuBoard game = new SudokuBoard(board);
+
+		for (int i = 0; i < board.length; i++)
+			for (int j = 0; j < board[i].length; j++)
+				SudokuAux.writeToCell(img, i, j, "" + (board[i][j] == 0 ? "" : board[i][j]));
+
+		for (int i = 0; i < BOARD_SIZE; i++)
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				if (!game.validateLine(i))
+					SudokuAux.invalidLine(img, i, board);
+				if (!game.validateColumn(i))
+					SudokuAux.invalidColumn(img, i, board);
+				if (!game.validateSector(i, j))
+					SudokuAux.invalidSector(img, i, j, board);
+			}
+
+		boolean g = game.isGameFinished();
+
+		System.out.println("banana");
 	}
 }

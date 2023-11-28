@@ -21,12 +21,6 @@ class SudokuAux {
 				if (!validElement(value))
 					return false;
 
-				// Search in the same line and same column for matching values; if that happens,
-				// the board is not valid
-				for (int k = 0; k < board.length; k++)
-					if ((board[k][j] == value && k != i) || (board[i][k] == value && k != j))
-						return false;
-
 				// Search in the quadrant of the cell we have in hand for repeated values
 				if (!validSectorPlay(i, j, value, board))
 					return false;
@@ -126,28 +120,5 @@ class SudokuAux {
 				img.paintCell(k, l, CELL_RESOLUTION, Color.SOLARIZED_ERROR);
 				writeToCellWithFontColor(img, k, l, board[k][l] + "", Color.SOLARIZED_ERROR);
 			}
-	}
-
-	static void test() {
-		int[][] board = { { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, { 4, 5, 6, 7, 8, 9, 1, 2, 3 }, { 7, 8, 9, 1, 2, 3, 4, 5, 6 },
-		    { 2, 1, 4, 3, 6, 5, 8, 9, 7 }, { 3, 6, 5, 8, 9, 7, 2, 1, 4 }, { 8, 9, 7, 2, 1, 4, 3, 6, 5 },
-		    { 5, 3, 1, 6, 4, 2, 9, 7, 8 }, { 6, 4, 2, 9, 7, 8, 5, 3, 1 }, { 9, 7, 8, 5, 3, 1, 6, 4, 2 } };
-
-		blankBoardProportionally(board, 0.0);
-
-		ColorImage img = new ColorImage(BOARD_RESOLUTION, BOARD_RESOLUTION, Color.SOLARIZED_BACKGROUND);
-
-		img.drawMargin();
-		img.drawGrid(9, 9, SECTOR_SIZE);
-
-		for (int i = 0; i < board.length; i++)
-			for (int j = 0; j < board[i].length; j++)
-				writeToCell(img, i, j, "" + (board[i][j] == 0 ? "" : board[i][j]));
-
-		invalidLine(img, 1, board);
-//		invalidColumn(img, 2, board);
-//		invalidSector(img, 7, 7, board);
-
-		System.out.println(stringify(board));
 	}
 }
