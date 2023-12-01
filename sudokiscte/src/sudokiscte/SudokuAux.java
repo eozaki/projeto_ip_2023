@@ -98,27 +98,33 @@ class SudokuAux {
 		    (cellLine * CELL_RESOLUTION) - CELL_RESOLUTION / 12, content, CELL_RESOLUTION, c);
 	}
 
-	static void invalidLine(ColorImage img, int line, int[][] board) {
+	static void paintLine(ColorImage img, int line, int[][] board, boolean valid) {
+		Color c = valid ? Color.SOLARIZED_FONT : Color.SOLARIZED_ERROR;
+
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			img.paintCell(line, i, CELL_RESOLUTION, Color.SOLARIZED_ERROR);
-			writeToCellWithFontColor(img, line, i, board[line][i] + "", Color.SOLARIZED_ERROR);
+			writeToCellWithFontColor(img, line, i, board[line][i] + "", c);
 		}
 	}
 
-	static void invalidColumn(ColorImage img, int column, int[][] board) {
+	static void paintColumn(ColorImage img, int column, int[][] board, boolean valid) {
+		Color c = valid ? Color.SOLARIZED_FONT : Color.SOLARIZED_ERROR;
+
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			img.paintCell(i, column, CELL_RESOLUTION, Color.SOLARIZED_ERROR);
-			writeToCellWithFontColor(img, i, column, board[i][column] + "", Color.SOLARIZED_ERROR);
+			writeToCellWithFontColor(img, i, column, board[i][column] + "", c);
 		}
 	}
 
-	static void invalidSector(ColorImage img, int verticalIndex, int horizontalIndex, int[][] board) {
+	static void paintSector(ColorImage img, int verticalIndex, int horizontalIndex, int[][] board, boolean valid) {
+		Color c = valid ? Color.SOLARIZED_FONT : Color.SOLARIZED_ERROR;
+
 		for (int k = (verticalIndex / SECTOR_SIZE) * SECTOR_SIZE; k < (verticalIndex / SECTOR_SIZE) * SECTOR_SIZE
 		    + SECTOR_SIZE; k++)
 			for (int l = (horizontalIndex / SECTOR_SIZE) * SECTOR_SIZE; l < (horizontalIndex / SECTOR_SIZE) * SECTOR_SIZE
 			    + SECTOR_SIZE; l++) {
 				img.paintCell(k, l, CELL_RESOLUTION, Color.SOLARIZED_ERROR);
-				writeToCellWithFontColor(img, k, l, board[k][l] + "", Color.SOLARIZED_ERROR);
+				writeToCellWithFontColor(img, k, l, board[k][l] + "", c);
 			}
 	}
 }

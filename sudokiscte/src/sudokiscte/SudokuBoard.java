@@ -7,7 +7,7 @@ class SudokuBoard {
 	static final int PLAYED_LINE_INDEX = 0;
 	static final int PLAYED_COLUMN_INDEX = 1;
 
-	private int[][] board;
+	public int[][] board;
 	private final int[][] initialBoard;
 
 	// Array of integers with as many lines as blank positions in the board, and 2
@@ -21,10 +21,12 @@ class SudokuBoard {
 	// sets it back to 0 in board and deduces 1 from the index, making it 0 again
 	private int playedPositions = 0;
 
-	public SudokuBoard(int[][] initialBoard) {
+	public SudokuBoard(int[][] initialBoard, double blankProportion) {
 		this.initialBoard = initialBoard;
 
 		copyInitialBoard();
+
+		SudokuAux.blankBoardProportionally(this.board, blankProportion);
 		int[][] plays = new int[countBlankPositions()][2];
 	}
 
@@ -200,37 +202,5 @@ class SudokuBoard {
 			}
 
 		return true;
-	}
-
-	static void test() {
-		int[][] board = { { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, { 4, 5, 3, 7, 8, 9, 1, 2, 3 }, { 7, 8, 9, 1, 2, 3, 4, 5, 6 },
-		    { 2, 1, 4, 3, 6, 5, 8, 9, 7 }, { 3, 6, 5, 8, 9, 7, 2, 1, 4 }, { 8, 9, 7, 2, 1, 4, 3, 6, 5 },
-		    { 5, 3, 1, 6, 4, 2, 9, 7, 8 }, { 6, 4, 2, 9, 7, 8, 5, 3, 1 }, { 9, 7, 8, 5, 3, 1, 6, 4, 2 } };
-		SudokuAux.blankBoardProportionally(board, 0);
-
-		ColorImage img = new ColorImage(SudokuAux.BOARD_RESOLUTION, SudokuAux.BOARD_RESOLUTION, Color.SOLARIZED_BACKGROUND);
-
-		img.drawMargin();
-		img.drawGrid(BOARD_SIZE, BOARD_SIZE, SECTOR_SIZE);
-
-		SudokuBoard game = new SudokuBoard(board);
-
-		for (int i = 0; i < board.length; i++)
-			for (int j = 0; j < board[i].length; j++)
-				SudokuAux.writeToCell(img, i, j, "" + (board[i][j] == 0 ? "" : board[i][j]));
-
-		for (int i = 0; i < BOARD_SIZE; i++)
-			for (int j = 0; j < BOARD_SIZE; j++) {
-				if (!game.validateLine(i))
-					SudokuAux.invalidLine(img, i, board);
-				if (!game.validateColumn(i))
-					SudokuAux.invalidColumn(img, i, board);
-				if (!game.validateSector(i, j))
-					SudokuAux.invalidSector(img, i, j, board);
-			}
-
-		boolean g = game.isGameFinished();
-
-		System.out.println("banana");
 	}
 }
