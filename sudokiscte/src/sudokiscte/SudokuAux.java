@@ -69,33 +69,10 @@ class SudokuAux {
 		return false;
 	}
 
-	// Creates a string from a board game
-	static String stringify(int[][] board) {
-		String result = "";
-
-		for (int i = 0; i < board.length; i++) {
-			for (int j = 0; j < board[i].length; j++) {
-				result += board[i][j];
-				// Adds whitespace to every element except the last (index BOARD_SIZE - 2)
-				if (j < BOARD_SIZE - 1)
-					result += " ";
-			}
-			result += "\n";
-		}
-
-		return result;
-	}
-
-	static void writeToCell(ColorImage img, int cellLine, int cellColumn, String content) {
-		img.wipeCell(cellLine, cellColumn, CELL_RESOLUTION);
-		img.drawText((cellColumn * CELL_RESOLUTION) + CELL_RESOLUTION / 4,
-		    (cellLine * CELL_RESOLUTION) - CELL_RESOLUTION / 12, content, CELL_RESOLUTION, Color.SOLARIZED_FONT);
-	}
-
 	static void writeToCellWithFontColor(ColorImage img, int cellLine, int cellColumn, String content, Color c) {
 		img.paintCell(cellLine, cellColumn, CELL_RESOLUTION, Color.SOLARIZED_BACKGROUND);
 		img.drawText((cellColumn * CELL_RESOLUTION) + CELL_RESOLUTION / 4,
-		    (cellLine * CELL_RESOLUTION) - CELL_RESOLUTION / 12, content, CELL_RESOLUTION, c);
+		    (cellLine * CELL_RESOLUTION) - CELL_RESOLUTION / 12, (content.equals("0")) ? "" : content, CELL_RESOLUTION, c);
 	}
 
 	static void paintLine(ColorImage img, int line, int[][] board, boolean valid) {
@@ -117,6 +94,8 @@ class SudokuAux {
 	}
 
 	static void paintSector(ColorImage img, int verticalIndex, int horizontalIndex, int[][] board, boolean valid) {
+		if (valid)
+			return;
 		Color c = valid ? Color.SOLARIZED_FONT : Color.SOLARIZED_ERROR;
 
 		for (int k = (verticalIndex / SECTOR_SIZE) * SECTOR_SIZE; k < (verticalIndex / SECTOR_SIZE) * SECTOR_SIZE

@@ -23,11 +23,11 @@ class SudokuBoard {
 
 	public SudokuBoard(int[][] initialBoard, double blankProportion) {
 		this.initialBoard = initialBoard;
+		SudokuAux.blankBoardProportionally(this.initialBoard, blankProportion);
 
 		copyInitialBoard();
 
-		SudokuAux.blankBoardProportionally(this.board, blankProportion);
-		int[][] plays = new int[countBlankPositions()][2];
+		this.plays = new int[countBlankPositions()][2];
 	}
 
 	private int countBlankPositions() {
@@ -85,7 +85,9 @@ class SudokuBoard {
 		int[] lastPlay = plays[playedPositions - 1];
 		int line = lastPlay[PLAYED_LINE_INDEX];
 		int column = lastPlay[PLAYED_COLUMN_INDEX];
-		board[line][column] = 0;
+		this.board[line][column] = 0;
+
+		validatePosition(line, column);
 
 		playedPositions--;
 	}
@@ -168,7 +170,7 @@ class SudokuBoard {
 	boolean validateColumn(int column) {
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			for (int j = i + 1; j < BOARD_SIZE; j++) {
-				if (board[i][column] == board[j][column])
+				if (board[i][column] == board[j][column] && board[i][column] != 0)
 					return false;
 			}
 		}
@@ -179,7 +181,7 @@ class SudokuBoard {
 	boolean validateLine(int line) {
 		for (int i = 0; i < BOARD_SIZE; i++) {
 			for (int j = i + 1; j < BOARD_SIZE; j++) {
-				if (board[line][i] == board[line][j])
+				if (board[line][i] == board[line][j] && board[line][i] != 0)
 					return false;
 			}
 		}
