@@ -158,7 +158,7 @@ class SudokuBoard {
 			return true;
 
 		for (int i = (sectorV / SECTOR_SIZE) * SECTOR_SIZE; i < (sectorV / SECTOR_SIZE) * SECTOR_SIZE + SECTOR_SIZE; i++) {
-			for (int j = (sectorH / SECTOR_SIZE) * SECTOR_SIZE + 1; j < (sectorH / SECTOR_SIZE) * SECTOR_SIZE
+			for (int j = (sectorH / SECTOR_SIZE) * SECTOR_SIZE; j < (sectorH / SECTOR_SIZE) * SECTOR_SIZE
 			    + SECTOR_SIZE; j++) {
 				if (board[i][j] == value && (i != sectorV || j != sectorH))
 					return false;
