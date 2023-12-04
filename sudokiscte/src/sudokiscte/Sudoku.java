@@ -2,6 +2,7 @@ package sudokiscte;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 class Sudoku {
@@ -44,6 +45,26 @@ class Sudoku {
 		sudokuBoard.play(i, j, value);
 
 		validateAndPaint(i, j);
+	}
+
+	public void save(String filename) {
+		try {
+			PrintWriter pw = new PrintWriter(new File(filename + ".sudgame"));
+			for (int i = 0; i < SudokuBoard.BOARD_SIZE; i++) {
+				for (int j = 0; j < SudokuBoard.BOARD_SIZE; j++)
+					pw.print(sudokuBoard.getValue(i, j) + (j == SudokuBoard.BOARD_SIZE - 1 ? "" : " "));
+				if (i != SudokuBoard.BOARD_SIZE - 1)
+					pw.print("\n");
+			}
+
+			pw.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("o ficheiro data.txt não pode ser escrito");
+		}
+	}
+
+	public void load(String filename) {
+		readGameFile(filename, this.sudokuBoard.board);
 	}
 
 	public void undo() {
