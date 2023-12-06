@@ -94,8 +94,6 @@ class SudokuAux {
 	}
 
 	static void paintSector(ColorImage img, int verticalIndex, int horizontalIndex, int[][] board, boolean valid) {
-		if (valid)
-			return;
 		Color c = valid ? Color.SOLARIZED_FONT : Color.SOLARIZED_ERROR;
 
 		for (int k = (verticalIndex / SECTOR_SIZE) * SECTOR_SIZE; k < (verticalIndex / SECTOR_SIZE) * SECTOR_SIZE

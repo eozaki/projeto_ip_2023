@@ -8,7 +8,7 @@ class SudokuBoard {
 	static final int PLAYED_COLUMN_INDEX = 1;
 
 	public int[][] board;
-	private final int[][] initialBoard;
+	public int[][] initialBoard;
 
 	// Array of integers with as many lines as blank positions in the board, and 2
 	// positions for each of those (line and column, respectively)
@@ -52,6 +52,20 @@ class SudokuBoard {
 		return this.board[i][j];
 	}
 
+	int getInitialValue(int i, int j) {
+		return this.initialBoard[i][j];
+	}
+
+	// For loading saved games, no validations in place
+	public void setInBoard(int i, int j, int value) {
+		this.board[i][j] = value;
+	}
+
+	// For loading saved games, no validations in place
+	public void setInInitial(int i, int j, int value) {
+		this.initialBoard[i][j] = value;
+	}
+
 	boolean play(int i, int j, int value) {
 		// Check if value is a valid play
 		if (!SudokuAux.validElement(value))
@@ -86,8 +100,6 @@ class SudokuBoard {
 		int line = lastPlay[PLAYED_LINE_INDEX];
 		int column = lastPlay[PLAYED_COLUMN_INDEX];
 		this.board[line][column] = 0;
-
-		validatePosition(line, column);
 
 		playedPositions--;
 	}
@@ -179,14 +191,20 @@ class SudokuBoard {
 	}
 
 	boolean validateLine(int line) {
-		for (int i = 0; i < BOARD_SIZE; i++) {
-			for (int j = i + 1; j < BOARD_SIZE; j++) {
-				if (board[line][i] == board[line][j] && board[line][i] != 0)
-					return false;
+		try {
+			for (int i = 0; i < BOARD_SIZE; i++) {
+				for (int j = i + 1; j < BOARD_SIZE; j++) {
+					if (board[line][i] == board[line][j] && board[line][i] != 0) {
+						System.out.println("Invalid line play");
+						throw new IllegalStateException("");
+					}
+				}
 			}
-		}
 
-		return true;
+			return true;
+		} catch (IllegalStateException e) {
+			return false;
+		}
 	}
 
 	boolean validatePosition(int line, int column) {
