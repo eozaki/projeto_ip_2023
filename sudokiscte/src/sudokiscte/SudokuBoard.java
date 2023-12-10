@@ -83,18 +83,20 @@ class SudokuBoard {
 	}
 
 	void storePlay(int line, int column) {
-		plays[playedPositions][0] = line;
-		plays[playedPositions][1] = column;
+		plays[playedPositions][PLAYED_LINE_INDEX] = line;
+		plays[playedPositions][PLAYED_COLUMN_INDEX] = column;
 
 		playedPositions++;
 	}
 
 	void undo() {
-		if (playedPositions == 0)
+		if (playedPositions <= 0) {
+			playedPositions = 0;
 			return;
+		}
 
-		if (playedPositions >= plays.length)
-			playedPositions = plays.length - 1;
+		if (playedPositions > plays.length + 1)
+			playedPositions = plays.length;
 
 		int[] lastPlay = plays[playedPositions - 1];
 		int line = lastPlay[PLAYED_LINE_INDEX];
@@ -111,13 +113,15 @@ class SudokuBoard {
 			i = (int) (Math.random() * BOARD_SIZE);
 			j = (int) (Math.random() * BOARD_SIZE);
 
-			if (getValue(i, j) != 0)
+			if (getValue(i, j) == 0)
 				break;
+
+			count++;
 		}
 
-		i = 0;
-		j = 0;
 		if (count >= 1000) {
+			i = 0;
+			j = 0;
 			while (i < BOARD_SIZE) {
 				while (j < BOARD_SIZE) {
 					if (board[i][j] == 0)
@@ -126,12 +130,15 @@ class SudokuBoard {
 				}
 				i++;
 			}
+			count++;
 		}
 
 		count = 0;
 		while (count < 1000) {
-			value = (int) (Math.random() * BOARD_SIZE);
-			boolean result = SudokuAux.validSectorPlay(i, j, value, board);
+			value = (int) ((Math.random() * BOARD_SIZE) + 1);
+			boolean result = uniqueValueInSector(value, i, j);
+			count++;
+
 			if (result)
 				break;
 		}
@@ -139,6 +146,7 @@ class SudokuBoard {
 		if (count >= 1000) {
 			for (value = 0; value <= BOARD_SIZE; value++) {
 				boolean result = SudokuAux.validSectorPlay(i, j, value, board);
+				count++;
 				if (result)
 					break;
 			}
@@ -151,6 +159,13 @@ class SudokuBoard {
 		for (int i = 0; i < board.length; i++)
 			for (int j = 0; j < board[i].length; j++)
 				board[i][j] = initialBoard[i][j];
+
+		for (int i = 0; i < plays.length; i++) {
+			plays[i][PLAYED_LINE_INDEX] = 0;
+			plays[i][PLAYED_COLUMN_INDEX] = 0;
+		}
+
+		playedPositions = 0;
 	}
 
 	boolean validateSector(int sectorV, int sectorH) {
@@ -180,14 +195,19 @@ class SudokuBoard {
 	}
 
 	boolean validateColumn(int column) {
-		for (int i = 0; i < BOARD_SIZE; i++) {
-			for (int j = i + 1; j < BOARD_SIZE; j++) {
-				if (board[i][column] == board[j][column] && board[i][column] != 0)
-					return false;
+		try {
+			for (int i = 0; i < BOARD_SIZE; i++) {
+				for (int j = i + 1; j < BOARD_SIZE; j++) {
+					if (board[i][column] == board[j][column] && board[i][column] != 0)
+						throw new IllegalArgumentException("Jogada inválida na coluna " + column);
+				}
 			}
-		}
 
-		return true;
+			return true;
+		} catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
+			return false;
+		}
 	}
 
 	boolean validateLine(int line) {
@@ -195,14 +215,14 @@ class SudokuBoard {
 			for (int i = 0; i < BOARD_SIZE; i++) {
 				for (int j = i + 1; j < BOARD_SIZE; j++) {
 					if (board[line][i] == board[line][j] && board[line][i] != 0) {
-						System.out.println("Invalid line play");
-						throw new IllegalStateException("");
+						throw new IllegalArgumentException("Jogada inválida na linha " + line);
 					}
 				}
 			}
 
 			return true;
-		} catch (IllegalStateException e) {
+		} catch (IllegalArgumentException e) {
+			System.out.println(e.getMessage());
 			return false;
 		}
 	}

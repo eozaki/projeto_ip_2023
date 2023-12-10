@@ -31,9 +31,11 @@ class SudokuAux {
 
 	static boolean validSectorPlay(int i, int j, int value, int[][] board) {
 		for (int k = (i / SECTOR_SIZE) * SECTOR_SIZE; k < (i / SECTOR_SIZE) * SECTOR_SIZE + SECTOR_SIZE; k++)
-			for (int l = (j / SECTOR_SIZE) * SECTOR_SIZE; l < (j / SECTOR_SIZE) * SECTOR_SIZE + SECTOR_SIZE; l++)
-				if (board[k][l] == value && k != i && l != j)
+			for (int l = (j / SECTOR_SIZE) * SECTOR_SIZE; l < (j / SECTOR_SIZE) * SECTOR_SIZE + SECTOR_SIZE; l++) {
+				if (board[k][l] == value && (k != i || l != j)) {
 					return false;
+				}
+			}
 
 		return true;
 	}

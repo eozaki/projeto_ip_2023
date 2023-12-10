@@ -8,6 +8,7 @@ import java.util.Scanner;
 class Sudoku {
 	private SudokuBoard sudokuBoard;
 	public ColorImage boardImg;
+	private String winMessage;
 
 	public Sudoku(String fileName, double difficulty) {
 		int[][] fileContent = new int[SudokuAux.BOARD_SIZE][SudokuAux.BOARD_SIZE];
@@ -20,10 +21,32 @@ class Sudoku {
 
 		readGameFile(fileName, fileContent);
 
+		winMessage = readMessageFile("src/fixtures/win_message");
+
 		this.boardImg = boardImg;
 
 		this.sudokuBoard = new SudokuBoard(fileContent, difficulty);
-		validateAndPaint(0, 0);
+
+		for (int i = 0; i < SudokuAux.BOARD_SIZE; i++)
+			validateAndPaint(i, i);
+	}
+
+	private String readMessageFile(String fileName) {
+		String text = new String();
+		try {
+			Scanner scanner = new Scanner(new File(fileName));
+			while (scanner.hasNextLine())
+				text += scanner.nextLine() + "\n";
+			scanner.close();
+			return text;
+		} catch (FileNotFoundException e) {
+			System.out.println("ficheiro " + fileName + " não encontrado");
+			return "Parabéns por concluir o jogo!";
+		}
+	}
+
+	private boolean isGameFinished() {
+		return sudokuBoard.isGameFinished();
 	}
 
 	private void readGameFile(String fileName, int[][] fileContent) {
@@ -41,10 +64,28 @@ class Sudoku {
 		}
 	}
 
+	public void randomPlay() {
+		sudokuBoard.randomPlay();
+
+		for (int i = 0; i < SudokuBoard.BOARD_SIZE; i++)
+			validateAndPaint(i, i);
+		if (isGameFinished())
+			System.out.println(winMessage);
+	}
+
+	public void reset() {
+		sudokuBoard.reset();
+
+		for (int i = 0; i < SudokuBoard.BOARD_SIZE; i++)
+			validateAndPaint(i, i);
+	}
+
 	public void play(int i, int j, int value) {
 		sudokuBoard.play(i, j, value);
 
 		validateAndPaint(i, j);
+		if (isGameFinished())
+			System.out.println(winMessage);
 	}
 
 	public void save(String filename) {
@@ -73,7 +114,7 @@ class Sudoku {
 
 	public void loadSavedGame(String fileName) {
 		try {
-			Scanner scanner = new Scanner(new File(fileName + ".sudgame"));
+			Scanner scanner = new Scanner(new File(fileName)); // Add `+ ".sudgame"` to force file type
 			for (int i = 0; i < SudokuAux.BOARD_SIZE; i++) {
 				String s = scanner.nextLine();
 				if (s.equals(""))
@@ -132,22 +173,15 @@ class Sudoku {
 	}
 
 	private void validateAndPaint(int i, int j) {
-		boolean[] lines = new boolean[SudokuAux.BOARD_SIZE];
-		boolean[] columns = new boolean[SudokuAux.BOARD_SIZE];
-
-		for (int k = 0; k < SudokuAux.BOARD_SIZE; k++) {
-			lines[k] = sudokuBoard.validateLine(k);
-			columns[k] = sudokuBoard.validateColumn(k);
-			SudokuAux.paintLine(boardImg, k, sudokuBoard.board, true);
-			SudokuAux.paintColumn(boardImg, k, sudokuBoard.board, true);
-		}
+		SudokuAux.paintLine(boardImg, i, sudokuBoard.board, true);
+		SudokuAux.paintColumn(boardImg, j, sudokuBoard.board, true);
 
 		SudokuAux.paintSector(boardImg, i, j, sudokuBoard.board, sudokuBoard.validateSector(i, j));
 
 		for (int k = 0; k < SudokuAux.BOARD_SIZE; k++) {
-			if (!lines[k])
+			if (!sudokuBoard.validateLine(k))
 				SudokuAux.paintLine(boardImg, k, sudokuBoard.board, false);
-			if (!columns[k])
+			if (!sudokuBoard.validateColumn(k))
 				SudokuAux.paintColumn(boardImg, k, sudokuBoard.board, false);
 		}
 	}
